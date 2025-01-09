@@ -1,0 +1,188 @@
+import warnings
+warnings.filterwarnings('ignore')
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn import metrics
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.metrics import classification_report,accuracy_score,confusion_matrix
+df = pd.read_excel('C:\\Users\\hp\\OneDrive\\Documents\\samminiproject\\samDataSet.xlsx')
+df
+#pip install sweetviz   uncomment this if u haven't install sweetviz
+
+import sweetviz as sv             #uncomment to run this lines of code
+report = sv.analyze(df)
+df['Gender'].unique()
+df['Age'].unique()
+le = LabelEncoder()
+df['Gender'] = le.fit_transform(df['Gender'])
+df['Personality (Class label)'].unique()
+le = LabelEncoder()
+df['Personality (Class label)'] = le.fit_transform(df['Personality (Class label)'])
+df
+df.head()
+df.describe().T
+df.isnull().sum()
+df.info()
+sns.heatmap(df.corr())
+plt.show()
+x = df.drop(['Personality (Class label)','Gender'],axis='columns')
+y= df['Personality (Class label)']
+x_train, x_test, y_train, y_test= train_test_split(x, y, test_size= 0.25, random_state=0)
+print("x_train.shape", x_train.shape, "y_train.shape", y_train.shape)
+print("x_test.shape", x_test.shape, "y_test.shape", y_test.shape)
+sc=StandardScaler()
+X_train=pd.DataFrame(sc.fit_transform(x_train))
+X_test=pd.DataFrame(sc.transform(x_test))
+X_train.head()
+from sklearn.tree import DecisionTreeClassifier
+classifier = DecisionTreeClassifier(criterion="entropy", max_depth=4)# Train Decision Tree Classifer
+classifier = classifier.fit(X_train,y_train)#Predict the response for test dataset
+y_pred = classifier.predict(X_test)
+print("Accuracy:",metrics.accuracy_score(y_test, y_pred)*100)
+from sklearn.feature_selection import SelectKBest
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import confusion_matrix,ConfusionMatrixDisplay
+from sklearn import metrics
+from sklearn import tree
+from sklearn.metrics import classification_report
+print(classification_report(y_test,y_pred))
+from sklearn import metrics
+
+cnf_matrix = metrics.confusion_matrix(y_test, y_pred)
+cnf_matrix
+cm = confusion_matrix(y_test, y_pred)
+disp = ConfusionMatrixDisplay(confusion_matrix=cm,display_labels=classifier.classes_)
+disp.plot()
+plt.show()
+fn=['Gender', 'Age', 'openness', 'neuroticism', 'conscientiousness', 'agreeableness', 'extraversion']
+cn=['dependable', 'serious', 'responsible', 'extraverted', 'lively']
+fig, axes = plt.subplots(nrows = 1,ncols = 1,figsize = (15,10), dpi=300)
+tree.plot_tree(classifier,
+               feature_names = fn,
+               class_names=cn,
+               filled = True);
+#fig.savefig('imagename.png')
+    def Prediction(features):
+        predict = classifier.predict(features)
+        if predict[0] == 0:
+            print("You have dependable Personality")
+        if predict[0] == 1:
+            print("You have dependable serious")
+        if predict[0] == 2:
+            print("You have dependable responsible")
+        if predict[0] == 3:
+            print("You have dependable extraverted")
+        if predict[0] == 4:
+            print("You have dependable lively")
+    list =[0,20,7,9,9,5]
+    features = np.array([list])
+    #features.reshape(1,-1)
+    Prediction(features)
+model = LogisticRegression(multi_class='multinomial', solver='lbfgs')
+model.fit(X_train,y_train)
+model = LogisticRegression(random_state=0, multi_class='multinomial', penalty='none', solver='newton-cg').fit(X_train, y_train)
+preds = model.predict(X_test)
+predictions = model.predict(X_test)
+print("Accuracy:",metrics.accuracy_score(y_test, predictions)*100)
+def my_confusion_matrix(y_test, y_pred, plt_title):
+    cm=confusion_matrix(y_test, y_pred)
+    print(classification_report(y_test, y_pred))
+    sns.heatmap(cm, annot=True, fmt='g', cbar=False, cmap='BuPu')
+    plt.xlabel('Predicted Values')
+    plt.ylabel('Actual Values')
+    plt.title(plt_title)
+    plt.show()
+    return cm
+print('Classificatio report')
+print(classification_report(y_test,predictions))
+print('********')
+
+print('Accuracy with Logistic Regression: ',accuracy_score(y_test,predictions)*100)
+print('********')
+
+print('The confusion matrix')
+print(my_confusion_matrix(y_test,predictions,'Logistic Regression CM'))
+    def Prediction(features):
+        predict = model.predict(features)
+        if predict[0] == 0:
+            print("You have  Personality")
+        if predict[0] == 1:
+            print("You have  serious")
+        if predict[0] == 2:
+            print("You have  responsible")
+        if predict[0] == 3:
+            print("You have  extraverted")
+        if predict[0] == 4:
+            print("You have  lively")
+    list =[0,20,4,5,6,6,1]
+    features = np.array([list])
+    #features.reshape(1,-1)
+    Prediction(features)
+#Import svm model
+from sklearn.neighbors import KNeighborsClassifier
+
+#Create a svm Classifier
+knn = KNeighborsClassifier()
+
+#Train the model using the training sets
+knn.fit(X_train,y_train)
+
+#Train the model using the training sets
+predicted = knn.predict(X_test)
+
+#Mesuring the accuracy score
+from sklearn.metrics import accuracy_score
+acc = accuracy_score(y_test, predicted)*100
+print(acc)
+#Import XGBoost model
+from xgboost import XGBClassifier
+
+#Create a XGBoost Classifier
+clf= XGBClassifier(learning_rate=0.09,n_estimators=150)
+
+#Train the model using the training sets
+clf.fit(X_train,y_train,eval_metric='logloss')
+
+#Train the model using the training sets
+predictions = clf.predict(X_test)
+
+#Mesuring the accuracy score
+from sklearn.metrics import accuracy_score
+
+print(" XGB accuracy_score: "+str(accuracy_score(y_test,predictions)))
+#Import svm model
+from sklearn import svm
+
+#Create a svm Classifier
+clf = svm.SVC(kernel='linear') # Linear Kernel
+
+#Train the model using the training sets
+clf.fit(X_train, y_train)
+
+#Predict the response for test dataset
+y_pred = clf.predict(X_test)
+
+#Mesuring the accuracy score
+from sklearn.metrics import accuracy_score
+acc = accuracy_score(y_test,y_pred)
+print(acc)
+# import the Logistic Regression class
+from sklearn.linear_model import LogisticRegression
+
+# instantiate the model (using the default parameters)
+logreg = LogisticRegression(random_state=16)
+
+# fit the model with data
+logreg.fit(X_train, y_train)
+
+y_pred = logreg.predict(X_test)
+
+##Mesuring the accuracy score
+from sklearn.metrics import accuracy_score
+acc = accuracy_score(y_test,y_pred)
+print(acc)
+report.show_html("./report.html")
